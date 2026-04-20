@@ -20,6 +20,11 @@
         <?php endif; ?>
         
         <form method="POST" action="../backend/auth.php">
+            <?php 
+            // Подключаем CSRF для генерации токена
+            require_once '../backend/CSRF.php';
+            echo CSRF::getTokenField(); 
+            ?>
             <input type="hidden" name="action" value="register">
             <input type="text" name="name" placeholder="Имя" required>
             <input type="email" name="email" placeholder="Email" required>

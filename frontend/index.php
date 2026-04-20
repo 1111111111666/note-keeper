@@ -8,6 +8,7 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once '../backend/db.php';
 require_once '../backend/functions.php';
+require_once '../backend/CSRF.php';
 
 $pdo = getConnection();
 $userId = $_SESSION['user_id'];
@@ -30,10 +31,11 @@ $notes = getNotesByUser($pdo, $userId);
         
         <p class="welcome">Привет, <?= htmlspecialchars($_SESSION['user_name']) ?>!</p>
         
-        <!-- Форма создания заметки с тегами -->
+        <!-- Форма создания заметки с тегами + CSRF-токен -->
         <div class="note-form">
             <h3>➕ Новая заметка</h3>
             <form method="POST" action="../backend/notes.php">
+                <?= CSRF::getTokenField() ?>  <!-- ← CSRF-токен -->
                 <input type="hidden" name="action" value="create">
                 <input type="text" name="title" placeholder="Заголовок" required>
                 <textarea name="body" placeholder="Текст заметки..." rows="3"></textarea>
@@ -92,12 +94,13 @@ $notes = getNotesByUser($pdo, $userId);
         </div>
     </div>
     
-    <!-- Модальное окно для редактирования -->
+    <!-- Модальное окно для редактирования с CSRF-токеном -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <h3>✏️ Редактировать заметку</h3>
             <form method="POST" action="../backend/notes.php">
+                <?= CSRF::getTokenField() ?>  <!-- ← CSRF-токен -->
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="id" id="edit_id">
                 <input type="text" name="title" id="edit_title" placeholder="Заголовок" required>

@@ -1,8 +1,21 @@
 <?php
 // auth.php - регистрация, вход, выход
 require_once 'db.php';
+require_once 'CSRF.php';
 
 session_start();
+
+// ========== CSRF-ЗАЩИТА ДЛЯ POST-ЗАПРОСОВ (регистрация и вход) ==========
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $token = $_POST['csrf_token'] ?? null;
+    
+    if (!CSRF::validateToken($token)) {
+        http_response_code(403);
+        die('Ошибка CSRF: неверный или отсутствующий токен. Попробуйте обновить страницу и повторить действие.');
+    }
+    
+    CSRF::clearToken();
+}
 
 // ========== РЕГИСТРАЦИЯ ==========
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'register') {
@@ -74,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit;
 }
 
-// ========== ВЫХОД ==========
+// ========== ВЫХОД (GET-запрос, CSRF не требуется) ==========
 if (isset($_GET['action']) && $_GET['action'] === 'logout') {
     session_destroy();
     header('Location: ../frontend/login.php');

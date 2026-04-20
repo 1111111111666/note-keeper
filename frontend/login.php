@@ -20,6 +20,10 @@
         <?php endif; ?>
         
         <form method="POST" action="../backend/auth.php">
+            <?php 
+            require_once '../backend/CSRF.php';
+            echo CSRF::getTokenField(); 
+            ?>
             <input type="hidden" name="action" value="login">
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Пароль" required>
